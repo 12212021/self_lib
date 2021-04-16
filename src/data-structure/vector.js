@@ -222,7 +222,7 @@ class Vector {
      * @param {*} ele 
      */
     search(ele) {
-        return this.search(ele, 0, this.size());
+        return this.searchRange(ele, 0, this.size());
     }
 
     /**
@@ -232,7 +232,9 @@ class Vector {
      * @param {Number} hi 
      */
     searchRange(ele, lo, hi) {
-        return Math.random() > 0.5 ? this.binSearch(ele, lo, hi) : this.fibSearch(ele, lo, hi);
+        return Math.random() > 0.5
+            ? this._binSearch(ele, lo, hi)
+            : this._fibSearch(ele, lo, hi);
     }
 
     /**
@@ -242,10 +244,10 @@ class Vector {
      * @param {*} hi
      * @returns 找到，返回index，否则，返回-1
      */
-    binSearch(ele, lo, hi) {
+    _binSearch(ele, lo, hi) {
         while(lo < hi) {
             // 中轴点 Math.floor
-            let mid = (lo + hi) << 1;
+            let mid = (lo + hi) >> 1;
             const val = this.get(mid);
             if (val === ele) {
                 return mid;
@@ -260,8 +262,27 @@ class Vector {
         return -1;
     }
 
-    fibSearch(ele, lo, hi) {
-
+    /**
+     * 在区间[lo, hi)内通过近似黄金比例的方式来方式查找元素的Rank秩
+     * 只能在常系数上降低一些复杂度
+     * @param {*} ele 
+     * @param {*} lo 
+     * @param {*} hi 
+     */
+    _fibSearch(ele, lo, hi) {
+        while(lo < hi) {
+            // 近似黄金比例分割
+            let mid = Math.floor((lo + hi * 2) / 3);
+            const val = this.get(mid);
+            if (val === ele) {
+                return mid;
+            } else if (val > ele) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -343,7 +364,6 @@ class Vector {
             const randomSortIndex = randomInt(count - lo) + lo;
             temp = this._elem[count - 1];
             this._elem[count - 1] = this._elem[randomSortIndex];
-            console.log(randomSortIndex, count, 'iiii')
             this._elem[randomSortIndex] = temp;
             count -= 1;
         }
