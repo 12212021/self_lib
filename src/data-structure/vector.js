@@ -276,7 +276,18 @@ class Vector {
      * @returns {boolean}
      */
     disordered() {
-
+        let preIndex = 0;
+        let curIndex = 1;
+        while(curIndex < this.size()) {
+            const preVal = this.get(preIndex);
+            const curVal = this.get(curIndex);
+            if (preVal > curVal) {
+                return true;
+            }
+            preIndex += 1;
+            curIndex += 1;
+        }
+        return false;
     }
 
     /**
