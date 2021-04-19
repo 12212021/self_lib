@@ -86,12 +86,25 @@ class Vector {
     }
 
     /**
-     * 扫描交换
+     * 扫描交换，将元素值最小的元素挪到最左边
      * @param {Number} lo 
      * @param {Number} hi 
      */
     _bubble(lo, hi) {
-
+        let sorted = true;
+        let temp;
+        hi -= 1;
+        while(lo < hi) {
+            if (this.get(hi) < this.get(hi - 1)) {
+                sorted = false;
+                temp = this.get(hi);
+                this.set(hi, this.get(hi - 1));
+                this.set(hi - 1, temp);
+            }
+            hi -= 1;
+        }
+        console.log(this._elem)
+        return sorted;
     }
 
     /**
@@ -100,7 +113,9 @@ class Vector {
      * @param {Number} hi 
      */
     _bubbleSort(lo, hi) {
-
+        while(!this._bubble(lo, hi)) {
+            lo += 1;
+        }
     }
 
     /**
@@ -349,7 +364,24 @@ class Vector {
      * @param {Number} hi 
      */
     sort(lo, hi) {
-
+        const rand = randomInt(5);
+        switch (rand) {
+            case 0:
+                this._bubbleSort(lo, hi);
+                break;
+            case 1:
+                this._selectionSort(lo, hi);
+                break;
+            case 2:
+                this._mergeSort(lo, hi);
+                break;
+            case 3:
+                this._heapSort(lo, hi);
+                break;
+            case 4:
+                this._quickSort(lo, hi);
+                break;
+        }
     }
 
     /**
