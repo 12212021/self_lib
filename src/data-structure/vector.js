@@ -163,19 +163,69 @@ class Vector {
     /**
      * 归并算法
      * @param {Number} lo 
+     * @param {Number} mid
      * @param {Number} hi 
      */
-    _merge(lo, hi) {
+    _merge(lo, mid, hi) {
+        if (lo > mid - 1) {
+            return;
+        }
+        if (mid + 1 > hi) {
+            return;
+        }
+        let tmpOrder = [];
+        for (let index = 0; index < hi - lo; index++) {
+            tmpOrder.push(this.get(index + lo));
+        }
+        console.log(tmpOrder);
+        let leftIndex = lo;
+        let rightIndex= mid;
+        let index = lo;
+        while(leftIndex < mid && rightIndex < hi) {
+            if (tmpOrder[leftIndex - lo] < tmpOrder[rightIndex - lo]) {
+                this.set(index, tmpOrder[leftIndex - lo]);
+                leftIndex += 1;
+            } else {
+                this.set(index, tmpOrder[rightIndex - lo]);
+                rightIndex += 1;
+            }
+            index += 1;
+        }
 
+        if (leftIndex < mid) {
+            while(index < hi) {
+                this.set(index, tmpOrder[leftIndex - lo]);
+                leftIndex += 1;
+                index += 1;
+            }
+        }
+
+        if (rightIndex < hi) {
+            while(index < hi) {
+                this.set(index, tmpOrder[rightIndex - lo]);
+                rightIndex += 1;
+                index += 1;
+            }
+        }
     }
 
     /**
      * 归并排序算法
+     * 核心：将两个有序数组合并成一个有序数组
+     * 假定归并排序算法，返回一个有序的数组
+     * 平凡解：只包含0个或者1个元素的数组是有序的
+     * 递归：将数组不断分治减半
+     * 
+     * 归并排序的时间复杂度为nlog(n)，但是同时也需要相同的空间复杂度，虽然是速度快且稳定，但是需要额外的空间
      * @param {Number} lo 
      * @param {Number} hi 
      */
     _mergeSort(lo, hi) {
-
+        if (hi - lo < 2) return;
+        const mid = (hi + lo) >> 1;
+        this._mergeSort(lo, mid);
+        this._mergeSort(mid, hi);
+        this._merge(lo, mid, hi);
     }
 
     /**
