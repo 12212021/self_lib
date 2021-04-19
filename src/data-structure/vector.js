@@ -92,23 +92,20 @@ class Vector {
      */
     _bubble(lo, hi) {
         let sorted = true;
-        let temp;
         hi -= 1;
         while(lo < hi) {
             if (this.get(hi) < this.get(hi - 1)) {
                 sorted = false;
-                temp = this.get(hi);
-                this.set(hi, this.get(hi - 1));
-                this.set(hi - 1, temp);
+                this._swap(hi, hi - 1);
             }
             hi -= 1;
         }
-        console.log(this._elem)
         return sorted;
     }
 
     /**
      * 冒泡排序算法
+     * 冒泡排序的index前进的方向和冒泡的方向是相反的，具体表现，外层循环index++，内层index--
      * @param {Number} lo 
      * @param {Number} hi 
      */
@@ -133,7 +130,34 @@ class Vector {
      * @param {Number} hi 
      */
     _selectionSort(lo, hi) {
+        while(lo < hi) {
+            let minIndex = lo + 1;
+            let j = lo + 1;
+            while(j < hi) {
+                if (this.get(j) < this.get(minIndex)) {
+                    minIndex = j;
+                }
+                j += 1;
+            }
+            if (this.get(lo) > this.get(minIndex)) {
+                this._swap(lo, minIndex);
+            }
+            lo += 1;
+        }
+    }
 
+    /**
+     * 交换向量中两个Index的位置
+     * @param {Number} aIndex 
+     * @param {Number} bIndex 
+     */
+    _swap(aIndex, bIndex) {
+        if (aIndex < 0 || aIndex > this.size - 1 || bIndex < 0 || bIndex > this.size - 1) {
+            throw new Error('Error Index of Vector');
+        }
+        let tmp = this.get(aIndex);
+        this.set(aIndex, this.get(bIndex));
+        this.set(bIndex, tmp);
     }
 
     /**
