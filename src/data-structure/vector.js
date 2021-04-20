@@ -121,7 +121,14 @@ class Vector {
      * @param {Number} hi 
      */
     _max(lo, hi) {
-
+        let index = lo;
+        let maxVal = this.get(index);
+        while(++index < hi) {
+            if (this.get(index) > maxVal) {
+                maxVal = this.get(index);
+            }
+        }
+        return maxVal;
     }
 
     /**
@@ -230,11 +237,63 @@ class Vector {
 
     /**
      * 快排轴点构造方法
+     * 用的是原地分隔（in-place）算法
      * @param {Number} lo 
      * @param {Number} hi 
+     * @returns {Number} 返回中轴元素的index值
      */
     _partition(lo, hi) {
+        const pivotIndex = this._getMedium(lo, hi);
+        const pivotVal = this.get(pivotIndex);
 
+        // 中轴元素到最后
+        this._swap(pivotIndex, hi -1);
+        let left = lo;
+        let right = hi - 1;
+
+
+        while(true) {
+            while(this.get(left) < pivotVal) {
+                left++;
+            }
+            while(this.get(right - 1) > pivotVal) {
+                right--;
+            }
+            if (left < right) {
+                this._swap(left, right - 1);
+                left++;
+                right--;
+            } else {
+                break;
+            }
+        }
+
+        this._swap(left, hi - 1);
+        return left;
+    }
+
+    /**
+     * 选取数组开头、结尾、中间三个值，去中值，为的是尽量保障pivot能靠中间
+     * 
+     * @param {Array} array 
+     * @param {Number} lo 
+     * @param {Number} hi 
+     * @returns {Number} 返回中间值的index
+     */
+    _getMedium(lo, hi) {
+        const mid = (lo + hi) >> 1;
+
+        if (this.get(lo) > this.get(hi)) {
+            this._swap(lo, hi);
+        }
+        if (this.get(mid) > this.get(hi)) {
+            this._swap(mid, hi);
+        }
+        if (this.get(lo) > this.get(mid)) {
+            this._swap(mid, lo);
+        }
+
+        return mid;
     }
 
     /**
@@ -243,7 +302,10 @@ class Vector {
      * @param {Number} hi 
      */
     _quickSort(lo, hi) {
-
+        if (hi - lo < 2) return;
+        const mid = this._partition(lo, hi);
+        this._quickSort(lo, mid);
+        this._quickSort(mid, hi);
     }
 
     /**
@@ -479,9 +541,7 @@ class Vector {
         let temp;
         while(count > lo) {
             const randomSortIndex = randomInt(count - lo) + lo;
-            temp = this._elem[count - 1];
-            this._elem[count - 1] = this._elem[randomSortIndex];
-            this._elem[randomSortIndex] = temp;
+            this._swap(randomSortIndex, count - 1);
             count -= 1;
         }
     }
