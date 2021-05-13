@@ -108,10 +108,11 @@ class List {
      * @param {ListNode} end 
      */
     _insert(begin, node, end) {
-        begin.setSucc(node);
-        node.setPre(begin);
-        node.setSucc(end);
-        end.setPre(node);
+        begin.succ = node;
+        node.pre = begin;
+
+        node.succ = end;
+        end.pre = node;
         this._size += 1;
     }
 
@@ -169,12 +170,12 @@ class List {
         let q = p.succ;
         while(q !== this.trailer) {
             if (p.data > q.data) {
-                return false;
+                return true;
             }
             p = q;
             q = q.succ;
         }
-        return true;
+        return false;
     }
 
     sort(p, n) {
@@ -203,23 +204,13 @@ class List {
     insertionSort(p, n) {
         let r = 0;
         while(r++ < n) {
+            // 可能是哨兵header节点
             const res = this.searchRange(p.data, p, r);
-            if (this._valid(res)) {
-                let pre = p.pre;
-                let succ = p.succ;
 
-                let resSucc = res.succ;
-                res.succ = p;
-                p.pre = res;
-                p.succ = resSucc;
-
-                pre.succ = succ;
-                succ.pre = pre;
-                p = succ;
-            }
-            else {
-                p = p.succ;
-            }
+            const nextNode = p.succ;
+            this.remove(p);
+            this._insert(res, p, res.succ);
+            p = nextNode;
         }
     }
 
@@ -266,7 +257,7 @@ class List {
             }
             p = p.succ;
         }
-        return p;
+        return maxNode;
     }
 
     /**
@@ -278,14 +269,13 @@ class List {
         if (n < 2) return;
 
         const mid = n >> 1;
-        const midNode = p;
-        let index = -1;
-        while(++index < mid) {
+        let midNode = p;
+        for(let index = 0; index < mid; index++) {
             midNode = midNode.succ;
         }
         this.mergeSort(p, mid);
         this.mergeSort(midNode, n - mid);
-        this._merge(p, mid, midNode, n - m);
+        this._merge(p, mid, midNode, n - mid);
     }
 
     /**
@@ -302,15 +292,19 @@ class List {
             let chooseNode = null;
             if (p.data < q.data) {
                 chooseNode = p;
+                this.remove(p);
                 p = p.succ;
+                pp.succ = p;
             }
             else {
                 chooseNode = q;
+                this.remove(q);
                 q = q.succ;
+                pp.succ = q;
             }
-            pp.succ = chooseNode;
-            chooseNode.pre = pp;
-            pp = chooseNode;
+            this._insert(pp, chooseNode, pp.succ);
+            pp = pp.succ;
+            index++;
         }
         if (index < n) {
             pp.succ = p;
@@ -365,11 +359,12 @@ class List {
      * 
      */
     searchRange(e, p, n) {
-        let p = p.pre;
+        p = p.pre;
         while(n--) {
             if (p.data <= e) {
                 break;
             }
+            p = p.pre;
         }
         // 可以通过valid来判断p节点是否为哨兵节点
         return p;
@@ -413,10 +408,10 @@ class List {
         while(q !== this.trailer) {
             if (p.data === q.data) {
                 this.remove(q);
-                q = p;
+                q = p.succ;
             }
-            q = q.succ;
             p = q;
+            q = q.succ;
         }
         return oldSize - this._size;
     }
