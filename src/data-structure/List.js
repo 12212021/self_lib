@@ -31,7 +31,17 @@ class List {
     }
 
     _clear() {
+        let p = this.header;
+        p = p.succ;
+        while(p !== this.trailer) {
+            const succ = p.succ;
+            p = null;
+            p = succ;
+            this._size -= 1;
+        }
 
+        this.header.succ = this.trailer;
+        this.trailer.pre = this.header;
     }
 
     /**
@@ -186,6 +196,7 @@ class List {
      * 对p节点后面的n个元素进行插入排序
      * 
      * 将序列分成两部分，有序的前缀和无序的后缀，反复迭代，将无序后缀插入到有序的前缀里
+     * 在任何时刻，相对于当前节点e = S[r]，前缀S[0, r)总是业已有序
      * @param {ListNode} p 
      * @param {Number} n 
      */
@@ -212,9 +223,104 @@ class List {
         }
     }
 
-    selectionSort(p, n) {}
+    /**
+     * 对p节点后面的n个元素进行选择排序
+     * 
+     * 将序列分成两部分，要求S[0, r)不大于S[r, length)，从前缀中选出最大者，转移到后缀
+     * @param {NodeList} p 
+     * @param {Number} n 
+     */
+    selectionSort(p, n) {
+        let count = n;
+        let trail = p;
+        while(count--) {
+            trail = trail.succ;
+        }
 
-    mergeSort(p, n) {}
+        while(n) {
+            const maxNode = this.selectMax(p, n);
+
+            this.remove(maxNode);
+            this._insert(trail.pre, maxNode, trail);
+            trail = trail.pre;
+            n -= 1;
+        }
+    }
+
+    /**
+     * 选取p节点后的n个节点中，值最大的元素
+     * @param {ListNode} p 
+     * @param {Number} n 
+     * @returns {ListNode} 返回最大值
+     */
+    selectMax(p, n) {
+        if (n < 1) {
+            throw new Error('argument n must be greater than 1');
+        }
+        let maxNode = p;
+        while(n--) {
+            const maxVal = maxNode.data;
+            const curVal = p.data;
+            if (maxVal < curVal) {
+                maxNode = p;
+            }
+            p = p.succ;
+        }
+        return p;
+    }
+
+    /**
+     * 对p节点后面的n的元素进行归并排序
+     * @param {ListNode} p 
+     * @param {Number} n 
+     */
+    mergeSort(p, n) {
+        if (n < 2) return;
+
+        const mid = n >> 1;
+        const midNode = p;
+        let index = -1;
+        while(++index < mid) {
+            midNode = midNode.succ;
+        }
+        this.mergeSort(p, mid);
+        this.mergeSort(midNode, n - mid);
+        this._merge(p, mid, midNode, n - m);
+    }
+
+    /**
+     * 
+     * @param {ListNode} p 左侧链表头节点
+     * @param {Number} n 左链表需要处理的节点个数
+     * @param {ListNode} q 右侧链表的头节点
+     * @param {Number} m 右侧链表需要处理的节点个数
+     */
+    _merge(p, n, q, m) {
+        let pp = p.pre;
+        let index = 0;
+        while(index < n && index < m) {
+            let chooseNode = null;
+            if (p.data < q.data) {
+                chooseNode = p;
+                p = p.succ;
+            }
+            else {
+                chooseNode = q;
+                q = q.succ;
+            }
+            pp.succ = chooseNode;
+            chooseNode.pre = pp;
+            pp = chooseNode;
+        }
+        if (index < n) {
+            pp.succ = p;
+            p.pre = pp;
+        }
+        else {
+            pp.succ = q;
+            q.pre = pp;
+        }
+    }
 
     /**
      * 从无序列表的n的真前驱中，找到等于e的元素
