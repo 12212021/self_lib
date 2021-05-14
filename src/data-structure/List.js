@@ -287,30 +287,29 @@ class List {
      */
     _merge(p, n, q, m) {
         let pp = p.pre;
-        let index = 0;
-        while(index < n && index < m) {
+        // 循环条件要注意，需要消耗完一个子链表
+        while(n && m) {
             let chooseNode = null;
             if (p.data < q.data) {
                 chooseNode = p;
                 this.remove(p);
                 p = p.succ;
-                pp.succ = p;
+                n -= 1;
             }
             else {
                 chooseNode = q;
                 this.remove(q);
                 q = q.succ;
-                pp.succ = q;
+                m -= 1;
             }
             this._insert(pp, chooseNode, pp.succ);
-            pp = pp.succ;
-            index++;
+            pp = chooseNode;
         }
-        if (index < n) {
+        if (!n) {
             pp.succ = p;
             p.pre = pp;
         }
-        else {
+        if(!m) {
             pp.succ = q;
             q.pre = pp;
         }

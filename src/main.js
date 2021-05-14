@@ -23,14 +23,15 @@ function testList() {
         }
         return arr;
     }
-    const arr = [78,283,232,232,1,1,2,90,132,132,567];
+    const arr = [78,283,232,232,1,1,2,90,132,132];
+    // const arr = [2,5,1,7, 10];
     const list = new List();
     initListFromArr(arr, list);
 
     window.self = list;
     window.toArray = toArray;
-    list.mergeSort(list.header.succ, list.size());
-    // self.mergeSort(self.header.succ, self.size())
+    // list.mergeSort(list.header.succ, list.size());
+    self.mergeSort(self.header.succ, self.size())
     console.log(toArray(self));
 }
 
