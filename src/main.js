@@ -1,8 +1,10 @@
 import {testList} from './data-structure/List-test.js';
 import {
     convertToBase,
-    convertFrom
+    convertFrom,
+    paren,
+    evaluate
 } from './data-structure/Stack-example.js';
 // testList();
 
-console.log(convertFrom('738172ABC', 16))
+window.evaluate = evaluate;
