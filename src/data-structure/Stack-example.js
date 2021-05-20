@@ -4,7 +4,6 @@
 
 import {Stack} from './Stack.js';
 
-
 /**
  * 输入一个合法的10进制数据和进制转化（最高限制为16）
  * 输出一个转化后的字符串
@@ -32,13 +31,13 @@ export function convertToBase(sourcce, base) {
         'E',
         'F'
     ];
-    while(sourcce > 0) {
+    while (sourcce > 0) {
         const remainder = sourcce % base;
-        sourcce = Math.floor(sourcce / base)
+        sourcce = Math.floor(sourcce / base);
         stack.push(charSet[remainder]);
     }
     let res = '';
-    while(stack.size()) {
+    while (stack.size()) {
         res += stack.pop();
     }
     return res;
@@ -52,36 +51,35 @@ export function convertToBase(sourcce, base) {
  */
 export function convertFrom(source, base) {
     const stack = new Stack();
-    for(let index = 0; index < source.length; index++) {
-        stack.push(source[index]);
+    for (const char of source) {
+        stack.push(char);
     }
     const charMap = {
-        '1': 1,
-        '2': 2,
-        '3': 3,
-        '4': 4,
-        '5': 5,
-        '6': 6,
-        '7': 7,
-        '8': 8,
-        '9': 9,
-        'A': 10,
-        'B': 11,
-        'C': 12,
-        'D': 13,
-        'E': 14,
-        'F': 15
+        1: 1,
+        2: 2,
+        3: 3,
+        4: 4,
+        5: 5,
+        6: 6,
+        7: 7,
+        8: 8,
+        9: 9,
+        A: 10,
+        B: 11,
+        C: 12,
+        D: 13,
+        E: 14,
+        F: 15
     };
 
     let res = 0;
     let weight = stack.size();
-    while(stack.size()) {
+    while (stack.size()) {
         const val = charMap[stack.pop()];
-        res += val * (Math.pow(base, weight - 1 - stack.size()));
+        res += val * Math.pow(base, weight - 1 - stack.size());
     }
     return res;
 }
-
 
 /**
  * 栈混洗
@@ -101,7 +99,6 @@ export function convertFrom(source, base) {
  * 令栈混洗中的push/pop操作对应为左括号和又括号，可证明
  *
  */
-
 
 /**
  * 判断一个表达式是不是合法的表达式
@@ -138,8 +135,8 @@ export function paren(exp) {
     return s.empyty();
 }
 
-
 /**
+ * 中缀表达式的优先级运算式关于栈回溯的一个例子
  *
  * @param {String} exp
  * @returns 返回字符串类型exp的输出
@@ -153,31 +150,56 @@ export function evaluate(exp) {
 
     let index = 0;
     exp = exp.replaceAll(' ', '');
-    while(index < exp.length) {
+    let expRNP = [];
+    while (index < exp.length) {
         const token = readToken(exp.slice(index));
         index += token.length;
 
         if (isOprator(token)) {
             if (token === ')') {
-                while(oprator.top() !== '(') {
-                    oprend.push(compute(oprator, oprend));
+                while (oprator.top() !== '(') {
+                    const op = oprator.pop();
+                    const rightOprend = oprend.pop();
+                    const leftOprend = oprend.pop();
+                    // compute执行的时候也是转换逆波兰表达式的时机
+                    expRNP.push(op);
+
+                    oprend.push(compute(op, rightOprend, leftOprend));
                 }
                 oprator.pop();
             } else {
-                while(leftOpratorPrecede(oprator.top(), token)) {
-                    oprend.push(compute(oprator, oprend));
+                while (leftOpratorPrecede(oprator.top(), token)) {
+                    const op = oprator.pop();
+                    const rightOprend = oprend.pop();
+                    const leftOprend = oprend.pop();
+
+                    // compute执行的时候也是转换逆波兰表达式的时机
+                    expRNP.push(op);
+
+                    oprend.push(compute(op, rightOprend, leftOprend));
                 }
                 oprator.push(token);
             }
-
         } else {
             // 对操作数而言
             oprend.push(Number(token));
+
+            // 转化逆波兰表达式，对于操作数，直接push到尾部
+            // 中缀表达式转化为后缀表达式的时候，操作数的相对顺序不发生变化，但是操作符顺序发生变化
+            expRNP.push(token);
         }
     }
-    while(oprator.top() !== 'sentry') {
-        oprend.push(compute(oprator, oprend));
+    while (oprator.top() !== 'sentry') {
+        const op = oprator.pop();
+        const rightOprend = oprend.pop();
+        const leftOprend = oprend.pop();
+
+        // compute执行的时候也是转换逆波兰表达式的时机
+        expRNP.push(op);
+
+        oprend.push(compute(op, rightOprend, leftOprend));
     }
+    console.log(expRNP.join(' '));
     return oprend.pop();
 }
 
@@ -194,7 +216,7 @@ function readToken(str) {
     }
     let index = 0;
     let token = firstChar;
-    while(++index < str.length) {
+    while (++index < str.length) {
         if (opList.includes(str[index])) {
             return token;
         } else {
@@ -203,7 +225,6 @@ function readToken(str) {
     }
     return token;
 }
-
 
 /**
  *
@@ -226,15 +247,15 @@ function leftOpratorPrecede(leftOprt, rightOprt) {
         return false;
     }
     const precedeTable = [
-    /*    当前运算法 */
-    /*       | (    )    +    -    *    /    ^ | */
-/*栈  ( */    ['=', '<', '<', '<', '<', '<', '<'],
-/*顶  ) */    ['=', '=', '<', '<', '<', '<', '<'],
-/*运  + */    ['>', '>', '=', '=', '<', '<', '<'],
-/*算  - */    ['>', '>', '=', '=', '<', '<', '<'],
-/*符  * */    ['>', '>', '>', '>', '=', '=', '<'],
-/*略  / */    ['>', '>', '>', '>', '=', '=', '>'],
-/*略  ^ */    ['>', '>', '>', '>', '>', '>', '=']
+        /*    当前运算法 */
+        /*       | (    )    +    -    *    /    ^ | */
+        /*栈  ( */ ['=', '<', '<', '<', '<', '<', '<'],
+        /*顶  ) */ ['=', '=', '<', '<', '<', '<', '<'],
+        /*运  + */ ['>', '>', '=', '=', '<', '<', '<'],
+        /*算  - */ ['>', '>', '=', '=', '<', '<', '<'],
+        /*符  * */ ['>', '>', '>', '>', '=', '=', '<'],
+        /*略  / */ ['>', '>', '>', '>', '=', '=', '>'],
+        /*略  ^ */ ['>', '>', '>', '>', '>', '>', '=']
     ];
     const indexMap = {
         '(': 0,
@@ -257,10 +278,7 @@ function leftOpratorPrecede(leftOprt, rightOprt) {
  * @param {Stack} oprendPairs
  * @returns {Number} 返回操作符运算结果
  */
-function compute(oprator, oprend) {
-    const op = oprator.pop();
-    const rightOprend = oprend.pop();
-    const leftOprend = oprend.pop();
+function compute(op, rightOprend, leftOprend) {
     switch (op) {
         case '+':
             return leftOprend + rightOprend;
@@ -273,4 +291,30 @@ function compute(oprator, oprend) {
         case '^':
             return Math.pow(leftOprend, rightOprend);
     }
+}
+
+/**
+ * 逆波兰表达式的计算，逆波兰表达式成为后缀表达式
+ * 语法规则：操作符紧邻对应的（最后一个）操作数之后
+ *
+ * 1 2 + 3 4 ^ * ==>  (1 + 2) * (3 ^ 4)
+ *
+ *
+ * @param {String} exp
+ */
+export function evaluateRPN(exp) {
+    const oprend = new Stack();
+    const tokens = exp.split(' ').filter(str => str !== '');
+
+    for (const token of tokens) {
+        if (isOprator(token)) {
+            const rightOprend = oprend.pop();
+            const leftOprend = oprend.pop();
+            oprend.push(compute(token, rightOprend, leftOprend));
+        } else {
+            oprend.push(Number(token));
+        }
+    }
+
+    return oprend.pop();
 }
