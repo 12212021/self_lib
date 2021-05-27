@@ -1,4 +1,5 @@
-import {BinaryNode, fromParentTo} from './BinaryNode'
+import {BinaryNode, fromParentTo, hasLChild, hasRChild} from './BinaryNode';
+import  {Stack} from '../Stack.js';
 
 class BinaryTree {
     constructor() {
@@ -197,6 +198,34 @@ class BinaryTree {
         this.travPost(x.lChild, callback);
         this.travPost(x.rChild, callback);
         callback(x);
+    }
+
+    /**
+     * 迭代版本的先序遍历
+     * @param {BinaryNode} x
+     * @param {Function} callback
+     */
+    travPreInter(x, callback) {
+        const s = new Stack();
+        let node;
+        if (x) {
+            s.push(x);
+        }
+
+        while (!s.empyty()) {
+            node = s.pop();
+            callback(node);
+
+            // 注意栈的顺序（后进先出），要先右孩子，后左孩子
+            if (hasRChild(node)) {
+                s.push(node.rChild)
+            }
+            if (hasLChild(node)) {
+                s.push(node.lChild);
+            }
+        }
+
+
     }
 }
 

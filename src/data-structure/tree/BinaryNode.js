@@ -210,4 +210,4 @@ function fromParentTo(p) {
 }
 
 
-export {BinaryNode, fromParentTo};
+export {BinaryNode, fromParentTo, hasLChild, hasRChild};
