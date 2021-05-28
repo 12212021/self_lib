@@ -34,7 +34,33 @@ class BinaryNode {
         this.rChild = new BinaryNode(e, this);
     }
 
-    succ() {}
+    /**
+     * 中序遍历的本质：为所有的节点赋予一个次序，从而将半线性的二叉树转化为线性结构
+     * 一旦二叉树确定了便利策略，二叉树便可以定义前驱和后继关系，没有前驱（后继）节点成为首（末）节点
+     *
+     * 中序遍历的后继节点
+     */
+    succ() {
+        let node = this;
+
+        // 右子树的最左子节点或者右节点
+        if (hasRChild(node)) {
+            node = node.rChild;
+            while(hasLChild(node)) {
+                node = node.lChild;
+            }
+            return node;
+        }
+        // 其直接后继应该  包含当前节点且为左子树的最低祖先
+        else {
+            while(isRChild(node)) {
+                node = node.parent;
+            }
+            node = node.parent;
+            return node;
+        }
+
+    }
 
     /**
      * 子树层次遍历

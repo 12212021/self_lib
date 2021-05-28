@@ -201,7 +201,7 @@ class BinaryTree {
     }
 
     /**
-     * 迭代版本的先序遍历
+     * 迭代版本的先序遍历，将尾递归转化为迭代式
      * @param {BinaryNode} x
      * @param {Function} callback
      */
@@ -224,8 +224,78 @@ class BinaryTree {
                 s.push(node.lChild);
             }
         }
+    }
 
 
+    /**
+     * 用最左侧通路的方法（leftmost path）来访问
+     * 先序遍历的过程：先沿着树最左侧通路自顶向下访问节点，而后再自底向上依次访问数的右子树
+     *
+     * preorder(T) = visit(T0), visit(T1) ... visit(Td)
+     * preorder(Td), ... preorder(T1), preorder(T0)
+     *
+     * @param {BinaryNode} x 被访问的节点
+     * @param {Function} callback
+     */
+    travPreIter2(x, callback) {
+        const stack = new Stack();
+
+        /**
+         * 最左通路直接向下，沿途优先访问节点
+         * @param {BinaryNode} node
+         */
+        const visitAlongLeftBranch = (node) => {
+            while(node) {
+                callback(node);
+                // 避免空的右孩子入栈
+                if (node.rChild) {
+                    stack.push(node.rChild);
+                }
+                node = node.lChild;
+            }
+        };
+
+        let node = x;
+        while(true) {
+            visitAlongLeftBranch(node);
+            if (stack.empyty()) {
+                break;
+            }
+            node = stack.pop();
+        }
+    }
+
+    /**
+     * 中序遍历的迭代算法，思路依然是最左侧通路算法的思路
+     * inorder(T) = visit(Ld), inorder(Td), ... visit(L1), inorder(T1)
+     * visit(L0), inorder(T0)
+     * @param {BinaryNode} x
+     * @param {Function} callback
+     */
+    travInIter(x, callback) {
+        const stack = new Stack();
+
+        /**
+         *
+         * @param {BinaryNode} node
+         */
+        const goAlongLeftBranch = (node) => {
+            while(node) {
+                stack.push(node);
+                node = node.lChild;
+            }
+        }
+
+        let node = x;
+        while(true) {
+            goAlongLeftBranch(node);
+            if (stack.empyty()) {
+                break;
+            }
+            node = stack.pop();
+            callback(node);
+            node = node.rChild;
+        }
     }
 }
 
