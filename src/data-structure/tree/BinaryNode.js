@@ -59,7 +59,6 @@ class BinaryNode {
             node = node.parent;
             return node;
         }
-
     }
 
     /**

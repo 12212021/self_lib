@@ -1,5 +1,6 @@
 import {BinaryNode, fromParentTo, hasLChild, hasRChild} from './BinaryNode';
-import  {Stack} from '../Stack.js';
+import {Stack} from '../Stack.js';
+import {Queue} from '../Queue.js';
 
 class BinaryTree {
     constructor() {
@@ -119,7 +120,8 @@ class BinaryTree {
      * @param {BinaryNode} x
      */
     remove(x) {
-        fromParentTo(x) = null;
+        x = fromParentTo(x);
+        x = null;
         this.updateHeightAbove(x.parent);
         const size = this.removeAt(x);
         this._size -= size;
@@ -143,7 +145,8 @@ class BinaryTree {
      * @returns {BinaryTree}
      */
     secede(x) {
-        fromParentTo(x) = null;
+        x = fromParentTo(x);
+        x = null;
         this.updateHeightAbove(x.parent);
 
         const newTree = new BinaryTree();
@@ -155,7 +158,21 @@ class BinaryTree {
         return newTree;
     }
 
-    travLevel(callback) {}
+    /**
+     *
+     * @param {Function} callback
+     */
+    travLevel(callback) {
+        let queue = new Queue();
+        queue.enqueue(this._root);
+
+        while (!queue.empty()) {
+            const node = queue.dequque();
+            callback(node);
+            if (node.lChild) queue.enqueue(node.lChild);
+            if (node.rChild) queue.enqueue(node.rChild);
+        }
+    }
 
     /**
      * 定义节点以及其左右孩子表示为V、L、R，以V节点访问顺序而言，有先序、中序、后续遍历方式
@@ -205,7 +222,7 @@ class BinaryTree {
      * @param {BinaryNode} x
      * @param {Function} callback
      */
-    travPreInter(x, callback) {
+    travPreIter(x, callback) {
         const s = new Stack();
         let node;
         if (x) {
@@ -218,14 +235,13 @@ class BinaryTree {
 
             // 注意栈的顺序（后进先出），要先右孩子，后左孩子
             if (hasRChild(node)) {
-                s.push(node.rChild)
+                s.push(node.rChild);
             }
             if (hasLChild(node)) {
                 s.push(node.lChild);
             }
         }
     }
-
 
     /**
      * 用最左侧通路的方法（leftmost path）来访问
@@ -244,8 +260,8 @@ class BinaryTree {
          * 最左通路直接向下，沿途优先访问节点
          * @param {BinaryNode} node
          */
-        const visitAlongLeftBranch = (node) => {
-            while(node) {
+        const visitAlongLeftBranch = node => {
+            while (node) {
                 callback(node);
                 // 避免空的右孩子入栈
                 if (node.rChild) {
@@ -256,7 +272,7 @@ class BinaryTree {
         };
 
         let node = x;
-        while(true) {
+        while (true) {
             visitAlongLeftBranch(node);
             if (stack.empyty()) {
                 break;
@@ -272,22 +288,22 @@ class BinaryTree {
      * @param {BinaryNode} x
      * @param {Function} callback
      */
-    travInIter(x, callback) {
+    travInIter0(x, callback) {
         const stack = new Stack();
 
         /**
          *
          * @param {BinaryNode} node
          */
-        const goAlongLeftBranch = (node) => {
-            while(node) {
+        const goAlongLeftBranch = node => {
+            while (node) {
                 stack.push(node);
                 node = node.lChild;
             }
-        }
+        };
 
         let node = x;
-        while(true) {
+        while (true) {
             goAlongLeftBranch(node);
             if (stack.empyty()) {
                 break;
@@ -297,7 +313,60 @@ class BinaryTree {
             node = node.rChild;
         }
     }
+
+    /**
+     *
+     * @param {BinaryNode} x
+     * @param {Function} callback
+     */
+    travInIter1(x, callback) {
+        const stack = new Stack();
+        while (true) {
+            if (x) {
+                stack.push(x); // 根节点进栈
+                x = x.lChild; // 深入遍历左子树
+            } else if (!stack.empyty()) {
+                x = stack.pop(); //  尚未访问的最低祖先节点
+                callback(x); // 访问该节点
+                x = x.rChild; // 遍历祖先的右子树
+            } else {
+                break;
+            }
+        }
+    }
+
+    /**
+     *
+     * @param {BinaryNode} x
+     * @param {Function} callback
+     */
+    travPostIter(x, callback) {
+        const stack = new Stack();
+        const gotoHLVFL = () => {
+            let node;
+            while ((node = stack.top())) {
+                if (hasLChild(node)) {
+                    if (hasRChild(node)) {
+                        stack.push(node.rChild);
+                    }
+                    stack.push(node.lChild);
+                } else {
+                    stack.push(node.rChild);
+                }
+                stack.pop();
+            }
+        };
+        if (x) {
+            stack.push(x);
+        }
+        while (!stack.empyty()) {
+            if (stack.top() !== x.parent) {
+                gotoHLVFL();
+            }
+            x = stack.pop();
+            callback(x);
+        }
+    }
 }
 
-
-export {BinaryTree}
+export {BinaryTree};
