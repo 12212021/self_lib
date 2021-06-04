@@ -8,5 +8,4 @@ import {
 } from './data-structure/Stack-example.js';
 // testList();
 
-window.evaluate = evaluate;
-window.rpn = evaluateRPN;
+import './data-structure/String-test.js'
