@@ -114,7 +114,7 @@ class Str {
             }
             if (j >= lenM) break;
         }
-        return i === (lenN - lenM + 1) ? -1 : i;
+        return i === lenN - lenM + 1 ? -1 : i;
     }
 
     /**
@@ -138,6 +138,51 @@ class Str {
         }
         const searchedIndex = i - j;
         return searchedIndex === this._len ? -1 : searchedIndex;
+    }
+
+    /**
+     *
+     * @param {Str} str
+     */
+    matchKMP(str) {
+        const table = this.buildNextTable(str.rawContent());
+
+        const lenN = this.length();
+        let i = 0;
+        const lenM = str.length();
+        let j = 0;
+        while (i < lenN && j < lenM) {
+            // j < 0用来处理哨兵元素返回为-1的情况
+            if (j < 0 || this.chartAt(i) === str.chartAt(j)) {
+                i++;
+                j++;
+            } else {
+                // 不匹配转入nextTable表
+                j = table[j];
+            }
+        }
+        return (i - j === this.length()) ? -1 : (i - j);
+    }
+
+    /**
+     *
+     * @param {String} chartP
+     */
+    buildNextTable(chartP) {
+        let next = new Array(chartP.length);
+        next[0] = -1;
+        let t = next[0];
+        let j = 0;
+        while (j < chartP.length) {
+            if (t < 0 || chartP[j] === chartP[t]) {
+                j++;
+                t++;
+                next[j] = t;
+            } else {
+                t = next[t];
+            }
+        }
+        return next;
     }
 }
 
