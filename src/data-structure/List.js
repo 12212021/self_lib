@@ -1,7 +1,7 @@
 
 /**
  * Vector特点是存储位置是连续的，通过Rank来访问，访问速度很快，但是插入和删除的效率比较慢
- * 
+ *
  * List是call-by-link，node节点的物理存储位置不是固定的，插入和删除比较快
  */
 
@@ -46,8 +46,8 @@ class List {
 
     /**
      * 从p节点开始，复制n个节点
-     * @param {ListNode} p 
-     * @param {Number} n 
+     * @param {ListNode} p
+     * @param {Number} n
      */
     _copyNodes(p, n) {
         this._init();
@@ -93,8 +93,8 @@ class List {
     }
 
     /**
-     * 
-     * @param {*} e 
+     *
+     * @param {*} e
      */
     insertAsFirst(e) {
         const node = new ListNode(e);
@@ -103,9 +103,9 @@ class List {
 
     /**
      * 将node元素插入到begin和end之间
-     * @param {ListNode} begin 
-     * @param {ListNode} node 
-     * @param {ListNode} end 
+     * @param {ListNode} begin
+     * @param {ListNode} node
+     * @param {ListNode} end
      */
     _insert(begin, node, end) {
         begin.succ = node;
@@ -122,9 +122,9 @@ class List {
     }
 
     /**
-     * 
-     * @param {ListNode} p 
-     * @param {*} e 
+     *
+     * @param {ListNode} p
+     * @param {*} e
      */
     insertBefore(p, e) {
         const node = new ListNode(e);
@@ -132,9 +132,9 @@ class List {
     }
 
     /**
-     * 
-     * @param {ListNode} p 
-     * @param {*} e 
+     *
+     * @param {ListNode} p
+     * @param {*} e
      */
     insertAfter(p, e) {
         const node = new ListNode(e);
@@ -143,9 +143,9 @@ class List {
 
     /**
      * 删除合法位置的p处的节点
-     * 
+     *
      * 即便p节点为链表唯一有效节点，头尾的哨兵元素能保障remove算法可用
-     * @param {ListNode} p 
+     * @param {ListNode} p
      */
     remove(p) {
         const data = p.data;
@@ -160,7 +160,7 @@ class List {
 
     /**
      * 判断链表是否是有序的
-     * 
+     *
      * 有序定义，对于所有 0 <= i <=j < n; A[i] <= A[j]
      */
     disordered() {
@@ -184,10 +184,10 @@ class List {
             case 0:
                 this.insertionSort(p, n);
                 break;
-            case 1: 
+            case 1:
                 this.selectionSort(p, n);
                 break;
-            case 2: 
+            case 2:
                 this.mergeSort(p, n);
                 break;
         }
@@ -195,11 +195,11 @@ class List {
 
     /**
      * 对p节点后面的n个元素进行插入排序
-     * 
+     *
      * 将序列分成两部分，有序的前缀和无序的后缀，反复迭代，将无序后缀插入到有序的前缀里
      * 在任何时刻，相对于当前节点e = S[r]，前缀S[0, r)总是业已有序
-     * @param {ListNode} p 
-     * @param {Number} n 
+     * @param {ListNode} p
+     * @param {Number} n
      */
     insertionSort(p, n) {
         let r = 0;
@@ -216,10 +216,10 @@ class List {
 
     /**
      * 对p节点后面的n个元素进行选择排序
-     * 
+     *
      * 将序列分成两部分，要求S[0, r)不大于S[r, length)，从前缀中选出最大者，转移到后缀
-     * @param {NodeList} p 
-     * @param {Number} n 
+     * @param {NodeList} p
+     * @param {Number} n
      */
     selectionSort(p, n) {
         let count = n;
@@ -240,8 +240,8 @@ class List {
 
     /**
      * 选取p节点后的n个节点中，值最大的元素
-     * @param {ListNode} p 
-     * @param {Number} n 
+     * @param {ListNode} p
+     * @param {Number} n
      * @returns {ListNode} 返回最大值
      */
     selectMax(p, n) {
@@ -262,24 +262,26 @@ class List {
 
     /**
      * 对p节点后面的n的元素进行归并排序
-     * @param {ListNode} p 
-     * @param {Number} n 
+     * @param {ListNode} p
+     * @param {Number} n
      */
     mergeSort(p, n) {
         if (n < 2) return;
 
         const mid = n >> 1;
-        let midNode = p;
+        let p1 = p;
+        let midNode;
         for(let index = 0; index < mid; index++) {
-            midNode = midNode.succ;
+            midNode = p1
+            p1 = p1.succ
         }
         this.mergeSort(p, mid);
-        this.mergeSort(midNode, n - mid);
+        this.mergeSort(midNode.succ, n - mid);
         this._merge(p, mid, midNode, n - mid);
     }
 
     /**
-     * 
+     *
      * @param {ListNode} p 左侧链表头节点
      * @param {Number} n 左链表需要处理的节点个数
      * @param {ListNode} q 右侧链表的头节点
@@ -317,9 +319,9 @@ class List {
 
     /**
      * 从无序列表的n的真前驱中，找到等于e的元素
-     * @param {*} e 
-     * @param {ListNode} p 
-     * @param {Number} n 
+     * @param {*} e
+     * @param {ListNode} p
+     * @param {Number} n
      */
     findRange(e, p, n) {
         while(n--) {
@@ -333,7 +335,7 @@ class List {
 
     /**
      * 无序列表寻找等于e的元素
-     * @param {*} e 
+     * @param {*} e
      */
     find(e) {
         return this.findRange(e, this.trailer, this._size);
@@ -341,9 +343,9 @@ class List {
 
     /**
      * 在有序链表中查找某个元素e
-     * 
+     *
      * 因为链表的地址是不连续的，不能像按Rank访问那样快速，所以有序链表和无需链表的查找工作无太多区别
-     * @param {*} e 
+     * @param {*} e
      */
     search(e) {
         return this.searchRange(e, this.trailer, this._size);
@@ -351,11 +353,11 @@ class List {
 
     /**
      * 查找p节点的n个真前继节点是否有data值为e的节点
-     * @param {*} e 
-     * @param {ListNode} p 
-     * @param {Number} n 
+     * @param {*} e
+     * @param {ListNode} p
+     * @param {Number} n
      * @returns {ListNode} 返回不大于e的p节点
-     * 
+     *
      */
     searchRange(e, p, n) {
         p = p.pre;
@@ -371,7 +373,7 @@ class List {
 
     /**
      * 无序链表唯一化
-     * 
+     *
      * @returns {number} 返回被删除元素的个数
      */
     deduplicate() {
@@ -396,7 +398,7 @@ class List {
     /**
      * 有序列表唯一化
      * 链表的删除操作是常数复杂度，所以跟向量删除有些许不同
-     * 
+     *
      * @returns {Number} 返回被删除元素的个数
      */
     uniquify() {

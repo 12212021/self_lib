@@ -1,4 +1,4 @@
-import {testList} from './data-structure/List-test.js';
+// import {testList} from './data-structure/List-test.js';
 import {
     convertToBase,
     convertFrom,
@@ -8,4 +8,6 @@ import {
 } from './data-structure/Stack-example.js';
 // testList();
 
-import './data-structure/String-test.js'
+// import './data-structure/String-test.js'
+
+import './data-structure/BitMap-test.js'
