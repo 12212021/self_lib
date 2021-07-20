@@ -1,5 +1,5 @@
 const DEFAULT_CAPACITY = 200;
-import {randomInt} from './utils.js';
+import {randomInt} from '../utils.js';
 
 /**
  * loadFactor = _size / _capactity 称为装填因子，是衡量空间利用标准的重要指标

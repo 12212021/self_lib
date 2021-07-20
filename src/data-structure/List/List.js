@@ -5,7 +5,7 @@
  * List是call-by-link，node节点的物理存储位置不是固定的，插入和删除比较快
  */
 
-import {randomInt} from './utils.js';
+import {randomInt} from '../utils.js';
 class List {
     constructor() {
         this._size = 0;
