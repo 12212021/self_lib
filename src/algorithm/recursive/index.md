@@ -1,16 +1,19 @@
 ### 线性递归
-分支转向是算法的灵魂，递归作为分支转向的一种比较形式，以其强大的灵活性闻名
+分支转向是算法的灵魂，递归作为分支转向的一种形式，以其强大的灵活性闻名
 
 递归地定义：允许函数或者过程自我调用，包括直接调用和间接调用
 
 递归优势：
 - 许多问题都可以简洁而准确地描述为递归形式
+  - 操作系统的文件目录组织结构
 - 递归是一种基本而典型的设计模式
+  - 二叉树的定义就是典型的递归
 
 数组求和
 ```js
+// 线性递归、减而治之 例子
 function sum(arr, length = arr.length) {
-    if (length < 1) {
+    if (length < 1) { // 平凡情况 递归基
         return 0;
     }
     return  sum(arr, length - 1) + arr[length - 1];
@@ -45,15 +48,15 @@ sum函数的递归跟踪如图所示
 #### 递推方程
 sum函数的递归方程为
 
-F(n) = F(n - 1) + C;
+F(n) = F(n - 1) + C1;
 
 边界条件为
 
-F(0) = C
+F(0) = C0
 
 联立方程可以有
 
-F(n) = C(n + 1)
+F(n) = C1 * n + C2
 
 ### 递归模式
 
@@ -119,7 +122,7 @@ function power2Multi(n) {
 ### 递归消除
 
 递归表现形式简洁，但是递归需要操作系统创建额外的栈执行空间，并进行销毁，所以再对空间性能要求比较高的场合，往往需要将递归改写为迭代的形式。
-一般是栈的方式进行模式
+一般是栈的方式进行模拟
 
 #### 尾递归及其优化
 尾递归：如果一个函数所有的调用都出现再函数的尾部且它的返回值不属于表达式的一部分，则称该递归为尾递归
@@ -165,6 +168,20 @@ function fib(n) {
 
 #### 通用的优化策略
 借助一定的辅助空间，待各个子问题求解之后，及时记录下其对应的解
+```js
+let cache = {}
+function fib(n) {
+    if (cache[n]) {
+        return cache[n];
+    }
+    if (n < 2) {
+        cache[n] = n;
+        return cache[n];
+    }
+    cache[n] = fib(n - 1) + fib(n - 2);
+    return cache[n];
+}
+```
 
 #### 迭代版本
 ```js
@@ -180,3 +197,27 @@ function fibIter(n) {
     return prePre;
 }
 ```
+
+### 递归计算和递归函数
+
+```js
+// 阶乘1
+function factorial(n) {
+    if (n < 2) {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
+
+// 阶乘2
+function factorialIter(n, product = 1) {
+    if (n < 2) {
+        return product * 1;
+    }
+    return factorialIter(n - 1, product * n);
+}
+```
+递归函数：递归函数是一种形式上的递归，只要函数（过程）直接或者间接调用自身，则其为递归函数（如factorialIter、factorial）
+
+递归计算：函数的调用栈维护了一个调用链，factorial属于递归计算，而factorialIter则属于迭代过程，其计算结果由n和product来维护，任何时刻，
+只要知道了n和product便能够推算出下一个结果
