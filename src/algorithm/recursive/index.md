@@ -1,4 +1,4 @@
-### 线性递归
+### 递归
 分支转向是算法的灵魂，函数调用（或者过程）作为分支转向的一种形式，以其强大的灵活性闻名
 
 递归地定义：允许函数或者过程自我调用，包括直接调用和间接调用
@@ -14,7 +14,7 @@
 // 线性递归、减而治之 例子
 function sum(arr, length = arr.length) {
     if (length < 1) { // 平凡情况 递归基
-        return 0;
+        return arr[0];
     }
     return  sum(arr, length - 1) + arr[length - 1];
 }
@@ -75,7 +75,7 @@ function revsrseCall(arr, lo, hi) {
         const temp = arr[lo];
         arr[lo] = arr[hi - 1];
         arr[hi - 1] = temp;
-        revsrse(arr, lo + 1, hi - 1);
+        revsrseCall(arr, lo + 1, hi - 1);
     }
     // else 分支隐含了lo === hi和lo > hi两种递归分支的平凡解
 }
