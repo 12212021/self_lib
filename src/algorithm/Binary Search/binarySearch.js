@@ -71,6 +71,7 @@ function binarySearchC(nums, target, lo, hi) {
 function binarySearchD(nums, target, lo, hi) {
     while (lo < hi) {
         const mid = (lo + hi) >> 1;
+        // 相等rank也增加
         if (nums[mid] <= target) {
             lo = mid + 1;
         } else {
@@ -78,5 +79,5 @@ function binarySearchD(nums, target, lo, hi) {
         }
     }
     const index = lo - 1;
-    return nums[index] === target ? index : -1;
+    return index;
 }

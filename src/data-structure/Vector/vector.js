@@ -3,7 +3,7 @@ import {randomInt} from '../utils.js';
 
 /**
  * loadFactor = _size / _capactity 称为装填因子，是衡量空间利用标准的重要指标
- * 
+ *
  */
 class Vector {
     constructor(arr) {
@@ -24,7 +24,7 @@ class Vector {
      * 复制数组的[lo, hi)
      * @param {Array} 待赋值数组
      * @param {Number} lo
-     * @param {Number} hi 
+     * @param {Number} hi
      */
     _copyForm(array, lo, hi) {
         this._capactity = (hi - lo) * 2;
@@ -64,7 +64,7 @@ class Vector {
 
     /**
      * 装填因子过小的时候进行压缩，缩容的策略是减少一半
-     * 
+     *
      * 缩容不是必须的
      */
     _shrink() {
@@ -87,8 +87,8 @@ class Vector {
 
     /**
      * 扫描交换，将元素值最小的元素挪到最左边
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     _bubble(lo, hi) {
         let sorted = true;
@@ -106,8 +106,8 @@ class Vector {
     /**
      * 冒泡排序算法
      * 冒泡排序的index前进的方向和冒泡的方向是相反的，具体表现，外层循环index++，内层index--
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     _bubbleSort(lo, hi) {
         while(!this._bubble(lo, hi)) {
@@ -117,8 +117,8 @@ class Vector {
 
     /**
      * 选取最大的元素
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     _max(lo, hi) {
         let index = lo;
@@ -133,8 +133,8 @@ class Vector {
 
     /**
      * 选择排序算法
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     _selectionSort(lo, hi) {
         while(lo < hi) {
@@ -155,8 +155,8 @@ class Vector {
 
     /**
      * 交换向量中两个Index的位置
-     * @param {Number} aIndex 
-     * @param {Number} bIndex 
+     * @param {Number} aIndex
+     * @param {Number} bIndex
      */
     _swap(aIndex, bIndex) {
         if (aIndex < 0 || aIndex > this.size - 1 || bIndex < 0 || bIndex > this.size - 1) {
@@ -169,9 +169,9 @@ class Vector {
 
     /**
      * 归并算法
-     * @param {Number} lo 
+     * @param {Number} lo
      * @param {Number} mid
-     * @param {Number} hi 
+     * @param {Number} hi
      */
     _merge(lo, mid, hi) {
         if (lo > mid - 1) {
@@ -222,11 +222,11 @@ class Vector {
      * 假定归并排序算法，返回一个有序的数组
      * 平凡解：只包含0个或者1个元素的数组是有序的
      * 递归：将数组不断分治减半
-     * 
+     *
      * 归并排序的时间复杂度为nlog(n)，但是同时也需要相同的空间复杂度，虽然是速度快且稳定，但是需要额外的空间
      * 归并排序需要额外线性的内存，而且需要将数据拷贝到临时数组，再拷贝回来，严重拖慢了排序的速度
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     _mergeSort(lo, hi) {
         if (hi - lo < 2) return;
@@ -239,8 +239,8 @@ class Vector {
     /**
      * 快排轴点构造方法
      * 用的是原地分隔（in-place）算法
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      * @returns {Number} 返回中轴元素的index值
      */
     _partition(lo, hi) {
@@ -275,10 +275,10 @@ class Vector {
 
     /**
      * 选取数组开头、结尾、中间三个值，去中值，为的是尽量保障pivot能靠中间
-     * 
-     * @param {Array} array 
-     * @param {Number} lo 
-     * @param {Number} hi 
+     *
+     * @param {Array} array
+     * @param {Number} lo
+     * @param {Number} hi
      * @returns {Number} 返回中间值的index
      */
     _getMedium(lo, hi) {
@@ -299,8 +299,8 @@ class Vector {
 
     /**
      * 快排是实践中已知最快速的排序算法，原因：非常精炼和内部高度优化的循环体
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     _quickSort(lo, hi) {
         if (hi - lo < 2) return;
@@ -311,8 +311,8 @@ class Vector {
 
     /**
      * 堆排序
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     _heapSort(lo, hi) {
 
@@ -355,7 +355,7 @@ class Vector {
 
     /**
      * 无序向量整体查找，整个数组查找其实是区间查找的一种特例
-     * @param {*} ele 
+     * @param {*} ele
      */
     find(ele) {
         return this.findRange(ele, 0, this.size());
@@ -363,12 +363,12 @@ class Vector {
 
     /**
      * 无序向量区间查找
-     * 
+     *
      * 查找最好的时间复杂度为o(1)，最末元素直接命中；最坏为o(n)未命中
      * 此类算法被称为输入敏感性算法（input sensitive）
-     * @param {*} ele 
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {*} ele
+     * @param {Number} lo
+     * @param {Number} hi
      */
     findRange(ele, lo, hi) {
         let index = hi;
@@ -382,7 +382,7 @@ class Vector {
 
     /**
      * 有序向量整体查找
-     * @param {*} ele 
+     * @param {*} ele
      */
     search(ele) {
         return this.searchRange(ele, 0, this.size());
@@ -390,9 +390,9 @@ class Vector {
 
     /**
      * 有序向量区间查找
-     * @param {*} ele 
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {*} ele
+     * @param {Number} lo
+     * @param {Number} hi
      */
     searchRange(ele, lo, hi) {
         return Math.random() > 0.5
@@ -402,8 +402,8 @@ class Vector {
 
     /**
      * 在区间[lo, hi)内通过二分查找寻找元素的Rank秩
-     * @param {*} ele 
-     * @param {*} lo 
+     * @param {*} ele
+     * @param {*} lo
      * @param {*} hi
      * @returns 找到，返回index，否则，返回-1
      */
@@ -428,9 +428,9 @@ class Vector {
     /**
      * 在区间[lo, hi)内通过近似黄金比例的方式来方式查找元素的Rank秩
      * 只能在常系数上降低一些复杂度
-     * @param {*} ele 
-     * @param {*} lo 
-     * @param {*} hi 
+     * @param {*} ele
+     * @param {*} lo
+     * @param {*} hi
      */
     _fibSearch(ele, lo, hi) {
         while(lo < hi) {
@@ -450,7 +450,7 @@ class Vector {
 
     /**
      * 依据index返回向量值
-     * @param {Number} index 
+     * @param {Number} index
      */
     get(index) {
         return this._elem[index];
@@ -458,8 +458,8 @@ class Vector {
 
     /**
      * 设置向量index值为value
-     * @param {Number} index 
-     * @param {*} val 
+     * @param {Number} index
+     * @param {*} val
      */
     set(index, val) {
         this._elem[index] = val;
@@ -467,7 +467,7 @@ class Vector {
 
     /**
      * 删除秩为index的向量处的值
-     * @param {Number} val 
+     * @param {Number} val
      */
     remove(index) {
         let eleBeRemove = this.get(index);
@@ -477,8 +477,8 @@ class Vector {
 
     /**
      * 删除向量区间值
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     removeRange(lo, hi) {
         if (lo === hi) {
@@ -494,8 +494,8 @@ class Vector {
 
     /**
      * 再秩index之前插入ele
-     * @param {*} ele 
-     * @param {Number} index 
+     * @param {*} ele
+     * @param {Number} index
      */
     insert(ele, index) {
         this._expand();
@@ -508,8 +508,8 @@ class Vector {
 
     /**
      * 对[lo, hi)之间的元素进行排序
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     sort(lo, hi) {
         const rand = randomInt(5);
@@ -534,8 +534,8 @@ class Vector {
 
     /**
      * 对[lo, hi)之间的元素进行置乱
-     * @param {Number} lo 
-     * @param {Number} hi 
+     * @param {Number} lo
+     * @param {Number} hi
      */
     unsort(lo, hi) {
         let count = hi;
@@ -557,7 +557,7 @@ class Vector {
         // 从1开始，可以保障前继元素都是不重复的
         while(index < this.size()) {
             const val = this.get(index);
-            if (this.find(val) !== -1) {
+            if (this.findRange(val, 0, index) !== -1) {
                 this.remove(index);
             } else {
                 index += 1;
