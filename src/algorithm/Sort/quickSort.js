@@ -15,7 +15,7 @@ function quickSort(arr) {
 }
 
 /**
- * partition array to three parts, members in left is smaller thann pivot, right is bigger
+ * partition array to three parts, members in left is smaller than pivot, right is bigger
  * @param {Array} arr the array to partition
  * @returns {Array} [left, right, right]
  */
