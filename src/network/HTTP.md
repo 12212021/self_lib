@@ -140,3 +140,63 @@ question list：
 - 如果小文件经常被reuse，考虑bundle
 - 如果小文件被经常更新，考虑bundle
 - 可以减少不必要的http header和cookie来减少http协议的overhead
+
+
+### HTTP 2.0
+
+#### HTTP 2.0设计目标
+- request、response的多路复用以减少时延
+- 压缩http headers，以减少开销
+- 增加请求优先级
+- 支持服务端推送
+
+#### Binary Framing Layer
+http 2.0引入了`二进制分帧层`，其示意图如下
+![image.png](https://i.loli.net/2021/10/11/Hc1vnE6i79BlwW4.png)
+
+##### Stream
+建立在tcp连接上的双向字节数据流，可以携带一个或者多个message
+
+##### Message
+完成的frame序列，在逻辑上代表了一个request请求或者response返回，可以携带一个或者多个frame
+
+##### Frames
+tcp上信息交流的最小单元，每个frame必须包含一个frame header，它指示了自己属于哪个Stream
+
+特点
+- 数据的传递是基于单个tcp
+- 每个stream有唯一标识符，可选标识自己的优先级
+- frame是最小的communication单元，携带了http headers、message payload等信息
+
+#### 请求多路复用
+![image.png](https://i.loli.net/2021/10/11/qe63gwVMA5aKOsB.png)
+
+http 1.1版本下，multiplexing是通过建立多个tcp链接来达到的。http 2.0版本中，由于增加了frame的序列号，天然带有多路复用。http2服务下，像雪碧图、文件合并、域名sharing都不再是合适的优化策略。
+
+
+http 2.0的多路复用特定也很好的解决了`http 1.1队头阻塞`的问题
+
+#### 请求的优先级
+http 2.0提供了优先级的接口供用户使用，但是并非强迫性的，也就说：即使client端提供了优先级，server端也可以不按照该优先级来处理请求，毕竟htt2的主要目标是`提高性能`，而多路复用是非常重要的一方面，如果提供优先级限制，则优先级高的资源会阻塞优先级低的资源，从某种意义来讲：形成了另一种`http 队头阻塞`
+
+
+#### Flow Control
+http2提供了流控制接口，但是没有提供流控制的默认实现，Flow Control的主要目的是：防止server端被client端发送的信息淹没
+
+
+Flow Control主要有以下特点：
+- 单向，服务端来控制流量窗口的大小
+- 基于credit（信用），服务端发送窗口大小的时候，client端要主动进行调节，但是没有强制性
+- Flow Control不能被禁用
+- Flow Control是hop-by-hop的，不是end-to-end，中间服务器也能调节流量
+
+
+#### 头部压缩
+http1.1中，header是基于text的，占据了流量的很大一部分。http2通过HPACK的方式来压缩http的头部。HPACK能高效压缩主要基于以下两个方面
+- 通过静态的Huffman进行编码，降低传输的大小
+- client端和server端维护一个头部列表（动态更新），当某个header被二次发送的时候，直接发送头部列表对应的编码数字，能大大减小传输数据
+
+
+进一步优化：
+
+双方维护一个静态header table（包含了常见的http headers），动态header table，双方进行信息交互的时候，如果是未见过的header，动态添加到dynamic header table，方便二次发送。
