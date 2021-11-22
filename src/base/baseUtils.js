@@ -3,7 +3,7 @@ function isInteger(n) {
 }
 
 function floor(num) {
-    return num - num % 1;
+    return num - (num % 1);
 }
 
 function ceil(num) {
@@ -17,7 +17,7 @@ function objectIs(a, b) {
         // Steps 1-5, 7-10
         // Steps 6.b-6.e: +0 != -0
         if (a !== 0) {
-            return true
+            return true;
         }
         return 1 / a === 1 / b;
     }
@@ -32,21 +32,20 @@ function isNaN(num) {
 }
 
 /**
- * 
+ *
  * @param {Function} fn function to be curred
  * @returns {*} curred function or result
  */
 function curry(fn) {
-    let _args = []
+    let _args = [];
     return function inner(...args) {
         _args = _args.concat(args);
         if (_args.length < fn.length) {
             return inner;
         }
         return fn(..._args);
-    }
+    };
 }
-
 
 function type(input) {
     const typeOf = typeof input;
@@ -58,10 +57,10 @@ function type(input) {
     } else if (typeOf === 'boolean' || input instanceof Boolean) {
         return 'Boolean';
     } else if (typeOf === 'number') {
-        return input === input ? 'Number' : 'NaN'
+        return input === input ? 'Number' : 'NaN';
     } else if (input instanceof Number) {
         const innerValue = input && input.valueOf && input.valueOf();
-        return innerValue === innerValue ? 'Number' : 'NaN'
+        return innerValue === innerValue ? 'Number' : 'NaN';
     } else if (typeOf === 'string' || input instanceof String) {
         return 'String';
     } else if (typeOf === 'symbol') {
@@ -83,7 +82,7 @@ function type(input) {
 
 /**
  * Primitive wrapper objects in JavaScript
- * 
+ *
  * String for the string primitive.
  * BigInt for the bigint primitive.
  * Boolean for the boolean primitive.
@@ -91,11 +90,10 @@ function type(input) {
  * Number for the number primitive.
  */
 
-
 /**
  * 当js期望一个bool值的时候，以下值总是会被当成false
- * 
- * 
+ *
+ *
  * false        false关键字
  * 0            数值0
  * -0           数值-0
@@ -106,5 +104,22 @@ function type(input) {
  * NaN          非数值Not a Number
  */
 
+function retry(asyncFunc, times = 3) {
+    const innerCall = (resolve, reject, retryTimes) => {
+        asyncFunc()
+            .then(res => resolve(res))
+            .catch(err => {
+                if (retryTimes <= 0) {
+                    reject(err);
+                    return;
+                }
+                innerCall(resolve, reject, retryTimes - 1);
+            });
+    };
 
-export {isInteger, floor, ceil, objectIs, isNaN, type, curry};
+    return new Promise((resolve, reject) => {
+        innerCall(resolve, reject, times);
+    });
+}
+
+export {isInteger, floor, ceil, objectIs, isNaN, type, curry, retry};
