@@ -37,4 +37,16 @@ function isPrime(num) {
 }
 
 
-console.log(isPrime(7));
+// 牛顿迭代法求解一个数的平方根
+function sqrt(c) {
+    if (c < 0) {
+        return NaN;
+    }
+    // 误差
+    const err = 1e-15;
+    let t = c;
+    while (Math.abs(t - c / t) > err * t) {
+        t = (c / t + t) / 2;
+    }
+    return t;
+}
