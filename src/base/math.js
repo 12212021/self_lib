@@ -24,16 +24,12 @@ function gcd(a, b) {
  */
 function isPrime(num) {
     const target = Math.floor(Math.sqrt(num));
-    function run(dividor) {
-        if (dividor < 2) {
-            return true;
-        }
-        if (Number.isInteger(num / dividor)) {
+    for (let i = 1; i <= target; i++) {
+        if (Number.isInteger(num / i)) {
             return false;
         }
-        return run(dividor - 1);
     }
-    return run(target);
+    return true;
 }
 
 
@@ -49,4 +45,17 @@ function sqrt(c) {
         t = (c / t + t) / 2;
     }
     return t;
+}
+
+/**
+ * 将一个整数映射为其所属区间的开头
+ * example
+ * 以0为开头，3为区间长度，则2 -> 0; 3 -> 3; 4 -> 3
+ * @param {number} intervalLen
+ * @param {number} begin
+ * @param {number} num
+ */
+function intervalMapping(intervalLen, begin, num) {
+    const absNum = num - begin;
+    return intervalLen * Math.floor(absNum / intervalLen) + begin;
 }
