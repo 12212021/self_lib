@@ -104,22 +104,44 @@ function type(input) {
  * NaN          非数值Not a Number
  */
 
+/**
+ * retry函数，针对异步函数失败，最多重试times
+ * ! 在try、catch语句中执行return，return值会作为函数的返回值
+ * ! 但是finally语句一定会执行
+ *
+ * @param {async function} asyncFunc
+ * @param {number} times
+ * @returns
+ */
 function retry(asyncFunc, times = 3) {
-    const innerCall = (resolve, reject, retryTimes) => {
-        asyncFunc()
-            .then(res => resolve(res))
-            .catch(err => {
-                if (retryTimes <= 0) {
-                    reject(err);
-                    return;
-                }
-                innerCall(resolve, reject, retryTimes - 1);
-            });
+    const call = async (...params) => {
+        let resp;
+        try {
+            resp = await asyncFunc.apply(null, params);
+        } catch (error) {
+            if (times > 0) {
+                times--;
+                return call(...params);
+            }
+            return error;
+        }
+        return resp;
     };
-
-    return new Promise((resolve, reject) => {
-        innerCall(resolve, reject, times);
-    });
+    return call;
 }
 
-export {isInteger, floor, ceil, objectIs, isNaN, type, curry, retry};
+/**
+ * 对集合的key进行map，同一mappedKey会被划分到一个集合内
+ * @param {Function} iteratee
+ * @param {Array} collection
+ */
+const keyBy = (iteratee, collection) => {
+    return collection.reduce((acc, cur) => {
+        const mappedKey = iteratee(cur);
+        if (!acc[mappedKey]) {
+            acc[mappedKey] = [];
+        }
+        acc[mappedKey].push(cur);
+        return acc;
+    }, {});
+};
