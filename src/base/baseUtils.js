@@ -145,3 +145,27 @@ const keyBy = (iteratee, collection) => {
         return acc;
     }, {});
 };
+
+/**
+ * 对数组进行洗牌，扰乱
+ * @param {Array} array
+ * @returns {Array}
+ */
+const shuffle = array => {
+    let index = 0;
+    const swap = (indexA, indexB, collection) => {
+        const tmp = collection[indexA];
+        collection[indexA] = collection[indexB];
+        collection[indexB] = tmp;
+    };
+    const lastIndex = array.length;
+    const shuffleArray = array.slice();
+
+    while (index < shuffleArray.length) {
+        const randomIndex =
+            Math.floor(Math.random() * (lastIndex - index)) + index;
+        swap(index, randomIndex, shuffleArray);
+        index++;
+    }
+    return shuffleArray;
+};
