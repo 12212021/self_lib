@@ -75,7 +75,7 @@ function instanceOf(L, R) {
  * @param {Array} args 一个包含promsie的可迭代对象
  * @returns 如果所有的promise都返回，则返回一个数组，数组内包含了所有promise，否则返回第一个reject的内容
  */
-export function PromiseAll(args) {
+function PromiseAll(args) {
     return new Promise((resolve, reject) => {
         let promiseNumber = args.length;
         let count = 0;
@@ -168,3 +168,68 @@ Function.prototype.selfCall = (thisArg, ...args) => {
     delete thisArg[fn];
     return result;
 };
+
+/**
+ * 返回带并发限制的http请求
+ * @param {strings[]} urls 请求urls
+ * @param {number} limit
+ * @returns {Promise}
+ */
+function requestWithLimit(urls = [], limit = 10) {
+    if (limit <= 0) {
+        throw new Error('并发度不能小于0');
+    }
+    const request = (url = '', timeout = 1000) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                // if (Math.random() > 0.5) {
+                //     resolve(url);
+                // } else {
+                //     reject('请求被拒绝了~');
+                // }
+                resolve(url);
+            }, timeout);
+        });
+    };
+    let remain = limit;
+    let result = Array(urls.length);
+    let count = 0;
+    let pool = urls.map((url, idx) => ({
+        idx,
+        url
+    }));
+    return new Promise((resolve, reject) => {
+        const consume = ({idx, url}) => {
+            remain--;
+            request(url)
+                .then(r => {
+                    remain++;
+                    count++;
+                    result[idx] = r;
+                    if (count === result.length) {
+                        resolve(result);
+                        return;
+                    }
+
+                    if (remain > 0 && pool.length) {
+                        consume(pool.shift());
+                    }
+                })
+                .catch(err => {
+                    reject(err);
+                });
+        };
+        const len = pool.length;
+        for (let i = 0; i < Math.min(len, limit); i++) {
+            consume(pool.shift());
+        }
+    });
+}
+// test for request with limit
+// const start = performance.now();
+// requestWithLimit(['1', '2', '3', '4', '5', '6', '7', '8'], 1000)
+//     .then(r => {
+//         console.log(performance.now() - start);
+//         console.log(r);
+//     })
+//     .catch(err => console.log(err));
