@@ -233,3 +233,83 @@ function requestWithLimit(urls = [], limit = 10) {
 //         console.log(r);
 //     })
 //     .catch(err => console.log(err));
+
+class MyPromise {
+    constructor(promiseFn) {
+        this.promiseFn = promiseFn;
+        this.thenCbList = [];
+        this.errorCbList = [];
+        // 传入promise的resolve和reject，绑定this，供外函数调用
+        this.promiseFn(this.resolve.bind(this), this.reject.bind(this));
+        return this;
+    }
+
+    then(cb) {
+        this.thenCbList.push(cb);
+        return this;
+    }
+
+    catch(cb) {
+        this.errorCbList.push(cb);
+        return this;
+    }
+
+    resolve(value) {
+        const cb = this.thenCbList.shift();
+        if (cb && typeof cb === 'function') {
+            let r;
+            try {
+                r = cb(value);
+            } catch (e) {
+                this.reject(r);
+            }
+            if (r instanceof MyPromise) {
+                r.then(res => {
+                    setTimeout(() => {
+                        this.resolve(res);
+                    }, 0);
+                }).catch(err => this.reject(err));
+            } else {
+                setTimeout(() => {
+                    this.resolve(r);
+                }, 0);
+            }
+        }
+    }
+
+    reject(err) {
+        const cb = this.errorCbList.shift();
+        if (cb && typeof cb === 'function') {
+            setTimeout(() => {
+                cb(err);
+                this.reject(err);
+            }, 0);
+        }
+    }
+}
+
+// test for MyPromise
+// const p = new MyPromise((resolve, reject) => {
+//     setTimeout(() => {
+//         resolve(1);
+//     }, 1000);
+// });
+
+// p.then(res => {
+//     console.log(`first ${res}`);
+//     return 2;
+// })
+//     .then(res => {
+//         console.log(`second ${res}`);
+//         return new MyPromise((resolve, reject) => {
+//             setTimeout(() => {
+//                 reject('error');
+//             }, 2000);
+//         });
+//     })
+//     .then(res => {
+//         console.log(`third ${res}`);
+//     })
+//     .catch(err => {
+//         console.log(`reject ${err}`);
+//     });
