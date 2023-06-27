@@ -4,6 +4,8 @@
  * 其中getDefaultFn为同步的函数，如果需要一部修改数据，用updateItem
  *
  * 主要解决了手动维护id的烦恼
+ *
+ * 这里的id还可以用Date.now() 由于js是单线程，此值可以保证独一无二
  */
 import { ref } from "vue";
 export function useDynamicItem(getDefaultFn) {
