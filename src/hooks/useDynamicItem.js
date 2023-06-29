@@ -5,7 +5,7 @@
  *
  * 主要解决了手动维护id的烦恼
  *
- * 这里的id还可以用Date.now() 由于js是单线程，此值可以保证独一无二
+ * 这里的id不可以用Date.now() map、for等循环中，生成的id可能是一个值
  */
 import { ref } from "vue";
 export function useDynamicItem(getDefaultFn) {
