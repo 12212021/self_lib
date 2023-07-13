@@ -130,6 +130,39 @@ function retry(asyncFunc, times = 3) {
     return call;
 }
 
+
+/**
+ * 再Promise中，then、catch函数中均可以返回一个Promise，返回的Promise会代替原有的
+ * 从而能够实现链式调用
+ * @param {Function} fn 异步函数
+ * @param {Number} times 重试次数
+ * @param {Number} delay 重试延时时长
+ * @returns 返回一个包裹的异步函数
+ */
+export const retry1 = (fn, times = 3, delay = 20) => {
+    let retryTimes = 0;
+    const call = (...args) => {
+        return new Promise((resolve, reject) => {
+            fn(...args)
+                .then(data => {
+                    resolve(data);
+                })
+                .catch(err => {
+                    if (retryTimes < times) {
+                        retryTimes++;
+                        return new Promise(r => {
+                            setTimeout(r, retryTimes * delay * 1000);
+                        }).then(call);
+                    } else {
+                        reject(err);
+                    }
+                });
+        });
+    };
+
+    return call;
+};
+
 /**
  * 对集合的key进行map，同一mappedKey会被划分到一个集合内
  * @param {Function} iteratee
