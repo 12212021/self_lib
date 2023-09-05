@@ -205,18 +205,40 @@ const shuffle = array => {
 
 // 如何从文件流下载文件
 const downloadTemplate = async (url, name) => {
-    httpApi.get(`${url}`, {}, {
-        responseType: 'blob'
-    }).then(res => {
-        const blob = res.rawData;
-        var a = document.createElement("a");
-        a.href = URL.createObjectURL(blob); // 将流文件写入a标签的href属性值
-        a.download = `${name}.xlsx`;
-        a.style.display = "none";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        // release URL.createObjectURL创建的流 未测试
-        URL.revokeObjectURL(url);
-    })
+    httpApi
+        .get(
+            `${url}`,
+            {},
+            {
+                responseType: 'blob'
+            }
+        )
+        .then(res => {
+            const blob = res.rawData;
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); // 将流文件写入a标签的href属性值
+            a.download = `${name}.xlsx`;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            // release URL.createObjectURL创建的流 未测试
+            URL.revokeObjectURL(url);
+        });
+};
+
+// 闭包函数，返回最新的promise
+function getLatestPromise(asyncFunc) {
+    let id = 0;
+    return function (...args) {
+        id++;
+        const curId = id;
+        return asyncFunc.apply(null, args).then(resp => {
+            // console.log(id, curId, '-----', args);
+            if (id === curId) {
+                return resp;
+            }
+            throw new Error('not latest promise result!');
+        });
+    };
 }
