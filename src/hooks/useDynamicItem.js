@@ -7,7 +7,7 @@
  *
  * 这里的id不可以用Date.now() map、for等循环中，生成的id可能是一个值
  */
-import { ref } from "vue";
+import {ref} from 'vue';
 export function useDynamicItem(getDefaultFn) {
     let id = 0;
     const list = ref([]);
@@ -21,31 +21,31 @@ export function useDynamicItem(getDefaultFn) {
         });
     };
 
-    const subItem = (id) => {
-        const findIndex = list.value.findIndex((each) => each.id === id);
+    const subItem = id => {
+        const findIndex = list.value.findIndex(each => each.id === id);
         if (findIndex !== -1) {
             list.value.splice(findIndex, 1);
         }
     };
 
-    const updateItem = (id, newItem, strategy = "merge") => {
-        list.value = list.value.map((each) => {
+    const updateItem = (id, newItem, strategy = 'merge') => {
+        list.value = list.value.map(each => {
             if (each.id === id) {
                 switch (strategy) {
-                    case "merge":
+                    case 'merge':
                         return {
                             ...each,
                             ...newItem,
                             id
                         };
-                    case "replace":
+                    case 'replace':
                         return {
                             ...newItem,
                             id
                         };
 
                     default:
-                        throw new Error("wrong strategy, please check!");
+                        throw new Error('wrong strategy, please check!');
                 }
             }
 
