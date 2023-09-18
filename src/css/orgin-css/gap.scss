@@ -1,0 +1,15 @@
+@import './base.scss';
+
+@each $key, $value in $basic-length {
+    .gap-#{$key} {
+        gap: $value
+    }
+
+    .gap-x-#{$key} {
+        column-gap: $value;
+    }
+
+    .gap-y-#{$key} {
+        row-gap: $value;
+    }
+}

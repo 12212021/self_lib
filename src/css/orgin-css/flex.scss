@@ -1,0 +1,47 @@
+@import './base.scss';
+
+// flex 方向
+.flex-row {
+    flex-direction: row;
+}
+.flex-row-reverse {
+    flex-direction: row-reverse;
+}
+.flex-col {
+    flex-direction: column;
+}
+.flex-col-reverse {
+    flex-direction: column-reverse;
+}
+
+// flex wrap
+.flex-wrap {
+    flex-wrap: wrap;
+}
+.flex-wrap-reverse {
+    flex-wrap: wrap-reverse;
+}
+.flex-nowrap {
+    flex-wrap: nowrap;
+}
+
+// flex 属性
+.flex-1 {
+    flex: 1 1 0%;
+}
+.flex-auto {
+    flex: 1 1 auto;
+}
+.flex-initial {
+    flex: 0 1 auto;
+}
+.flex-none {
+    flex: none;
+}
+
+// flex basic
+@each $key, $value in $basic-length {
+    .basic-#{$key} {
+        flex-basis: #{$value};
+    }
+}
