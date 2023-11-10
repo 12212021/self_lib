@@ -163,21 +163,6 @@ export const retry1 = (fn, times = 3, delay = 20) => {
     return call;
 };
 
-/**
- * 对集合的key进行map，同一mappedKey会被划分到一个集合内
- * @param {Function} iteratee
- * @param {Array} collection
- */
-const keyBy = (iteratee, collection) => {
-    return collection.reduce((acc, cur) => {
-        const mappedKey = iteratee(cur);
-        if (!acc[mappedKey]) {
-            acc[mappedKey] = [];
-        }
-        acc[mappedKey].push(cur);
-        return acc;
-    }, {});
-};
 
 /**
  * 对数组进行洗牌，扰乱
@@ -242,3 +227,5 @@ function getLatestPromise(asyncFunc) {
         });
     };
 }
+
+
