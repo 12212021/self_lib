@@ -71,8 +71,5 @@ mainGroup
     .join('rect')
     .attr('fill', 'green')
     .attr('width', xScale.bandwidth())
-    .attr('height', d =>innerHeight-yScale(d.age))
-    .attr(
-        'transform',
-        d => `translate(${xScale(d.name)}, ${yScale(d.age)})`
-    );
+    .attr('height', d => innerHeight - yScale(d.age))
+    .attr('transform', d => `translate(${xScale(d.name)}, ${yScale(d.age)})`);
