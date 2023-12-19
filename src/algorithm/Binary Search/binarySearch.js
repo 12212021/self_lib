@@ -44,6 +44,7 @@ function binarySearchB(nums, target, lo, hi) {
 
 /**
  * 针对最坏查找情况，能略微提高运算效率
+ * 这里用1来避免死循环
  * @param {number[]} nums
  * @param {number} target
  * @param {number} lo
@@ -53,7 +54,7 @@ function binarySearchC(nums, target, lo, hi) {
     while (hi - lo > 1) {
         const mid = (lo + hi) >> 1;
         if (nums[mid] < target) {
-            lo = mid + 1;
+            lo = mid;
         } else {
             hi = mid;
         }
