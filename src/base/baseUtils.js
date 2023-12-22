@@ -130,40 +130,6 @@ function retry(asyncFunc, times = 3) {
     return call;
 }
 
-
-/**
- * 再Promise中，then、catch函数中均可以返回一个Promise，返回的Promise会代替原有的
- * 从而能够实现链式调用
- * @param {Function} fn 异步函数
- * @param {Number} times 重试次数
- * @param {Number} delay 重试延时时长
- * @returns 返回一个包裹的异步函数
- */
-export const retry1 = (fn, times = 3, delay = 20) => {
-    let retryTimes = 0;
-    const call = (...args) => {
-        return new Promise((resolve, reject) => {
-            fn(...args)
-                .then(data => {
-                    resolve(data);
-                })
-                .catch(err => {
-                    if (retryTimes < times) {
-                        retryTimes++;
-                        return new Promise(r => {
-                            setTimeout(r, retryTimes * delay * 1000);
-                        }).then(call);
-                    } else {
-                        reject(err);
-                    }
-                });
-        });
-    };
-
-    return call;
-};
-
-
 /**
  * 对数组进行洗牌，扰乱
  * @param {Array} array
@@ -219,7 +185,6 @@ function getLatestPromise(asyncFunc) {
         id++;
         const curId = id;
         return asyncFunc.apply(null, args).then(resp => {
-            // console.log(id, curId, '-----', args);
             if (id === curId) {
                 return resp;
             }
@@ -228,4 +193,23 @@ function getLatestPromise(asyncFunc) {
     };
 }
 
-
+// 获取第一个promise
+function getFirstPromise(asyncFunc) {
+    let pendingPromise = null;
+    return function (...args) {
+        if (pendingPromise) {
+            return pendingPromise;
+        }
+        pendingPromise = asyncFunc
+            .apply(null, args)
+            .then(data => {
+                pendingPromise = null;
+                return data;
+            })
+            .catch(err => {
+                pendingPromise = null;
+                throw err;
+            });
+        return pendingPromise;
+    };
+}

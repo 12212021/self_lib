@@ -17,37 +17,35 @@ function callbackfy(fn) {
     };
 }
 
-/**
- *
- * @param {any} src 被拷贝的元素
- * @returns 深拷贝后的元素，需要提防循环引用引起的暴栈问题
- */
-function deepCopy(src) {
-    let dist;
-    if (isPlain(src)) {
-        dist = src;
-        return dist;
+function deepCopy(obj, seen = new WeakMap()) {
+    // 判断是否为对象类型，如果是数组或函数，则使用JSON方法进行深拷贝
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
     }
-    dist = Array.isArray(src) ? [] : {};
-    Object.keys(src).forEach(key => {
-        dist[key] = isPlain(src[key]) ? src[key] : deepCopy(src[key]);
-    });
-    return dist;
-}
 
-function isPlain(item) {
-    if (
-        item === null ||
-        typeof item === 'number' ||
-        typeof item === 'string' ||
-        typeof item === 'symbol' ||
-        typeof item === 'undefined' ||
-        typeof item === 'function' ||
-        typeof item === 'boolean'
-    ) {
-        return true;
+    // 检查是否已经处理过该对象，如果是则直接返回
+    if (seen.has(obj)) {
+        return seen.get(obj);
     }
-    return false;
+
+    // 创建一个新的对象或数组，用于存储深拷贝后的结果
+    let copy = Array.isArray(obj) ? [] : {};
+
+    // 将新对象添加到已处理过的对象集合中
+    seen.set(obj, copy);
+
+    // 遍历原对象的所有属性，并进行深拷贝
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            copy[key] = deepCopy(obj[key], seen);
+        }
+    }
+
+    return copy;
+}
+function isObject(value) {
+    const type = typeof value;
+    return value != null && (type === 'object' || type === 'function');
 }
 
 /**
@@ -171,57 +169,39 @@ Function.prototype.selfCall = (thisArg, ...args) => {
 
 /**
  * 返回带并发限制的http请求
- * @param {strings[]} urls 请求urls
+ * @param {string[]} urls 请求urls
  * @param {number} limit
  * @returns {Promise}
  */
 function requestWithLimit(urls = [], limit = 10) {
-    if (limit <= 0) {
-        throw new Error('并发度不能小于0');
-    }
-    const request = (url = '', timeout = 1000) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // if (Math.random() > 0.5) {
-                //     resolve(url);
-                // } else {
-                //     reject('请求被拒绝了~');
-                // }
-                resolve(url);
-            }, timeout);
-        });
-    };
-    let remain = limit;
-    let result = Array(urls.length);
-    let count = 0;
-    let pool = urls.map((url, idx) => ({
-        idx,
-        url
-    }));
+    const successNum = 0;
+    const result = new Array(urls.length);
+    let urlIndex = 0;
+
     return new Promise((resolve, reject) => {
-        const consume = ({idx, url}) => {
-            remain--;
-            request(url)
-                .then(r => {
-                    remain++;
-                    count++;
-                    result[idx] = r;
-                    if (count === result.length) {
+        const request = index => {
+            const url = urls[index];
+            http(url)
+                .then(data => {
+                    successNum++;
+                    result[index] = data;
+                    if (successNum === urls.length) {
                         resolve(result);
                         return;
                     }
-
-                    if (remain > 0 && pool.length) {
-                        consume(pool.shift());
-                    }
+                    urlIndex++;
+                    request(urlIndex);
                 })
                 .catch(err => {
                     reject(err);
                 });
         };
-        const len = pool.length;
-        for (let i = 0; i < Math.min(len, limit); i++) {
-            consume(pool.shift());
+        for (
+            urlIndex = 0;
+            urlIndex < Math.min(limit, urls.length);
+            urlIndex++
+        ) {
+            request(urlIndex);
         }
     });
 }
