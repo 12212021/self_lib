@@ -50,6 +50,8 @@ function isObject(value) {
 
 /**
  * 判断一个对象是不是一个类的实例
+ *
+ * 构造函数才有prototype对象，es6新出的箭头函数是没prototype的
  * @param {Object} L 被检测的对象
  * @param {Function} R 原型构造函数
  */
@@ -293,3 +295,13 @@ class MyPromise {
 //     .catch(err => {
 //         console.log(`reject ${err}`);
 //     });
+
+function flatten(array) {
+    return array.reduce((acc, cur) => {
+        if (Array.isArray(cur)) {
+            return acc.concat(flatten(cur));
+        }
+        acc.push(cur);
+        return acc;
+    }, []);
+}
