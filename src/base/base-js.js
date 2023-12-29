@@ -305,3 +305,52 @@ function flatten(array) {
         return acc;
     }, []);
 }
+
+class SliceBlob {
+    constructor(chunkSize = 10 * 1024 * 1024) {
+        this.chunkSize = chunkSize;
+        this.data = [];
+    }
+
+    createFileChunk(file, size = this.chunkSize) {
+        const fileChunkList = [];
+        let cur = 0;
+        while (cur < file.size) {
+            fileChunkList.push({
+                // 这里用文件自己prototype上带的slice方法进行分片
+                file: file.slice(cur, cur + size)
+            });
+            cur += size;
+        }
+        return fileChunkList;
+    }
+
+    async uploadChunks() {
+        const requestList = this.data
+            .map(({chunk, hash}) => {
+                const formData = new FormData();
+                formData.append('chunk', chunk);
+                formData.append('hash', hash);
+                formData.append('filename', 'fileTest');
+                return {
+                    formData
+                };
+            })
+            .map(({formData}) => {
+                return this.request({url: '', data: formData});
+            });
+        await Promise.all(requestList);
+    }
+
+    async handleUpload() {
+        const fileChunkList = this.createFileChunk();
+        this.data = fileChunkList.map(({file}, i) => {
+            return {
+                chunk: file,
+                hash: 'file-' + i
+            };
+        });
+
+        await this.uploadChunks();
+    }
+}
