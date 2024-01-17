@@ -1,86 +1,72 @@
 /**
+ * 基础版本
+ * 若target < nums[mid] 则hi = mi,前半区间查找
+ * 若target > nums[mid] 则lo = mid + 1，后半区间查找
+ * 否则命中target
+ * @param {Array} nums
+ */
+function binarySearchA(nums = [], target) {
+    let lo = 0;
+    let hi = nums.length;
+    while (lo < hi) {
+        const mid = (lo + hi) >>> 1;
+        if (target < nums[mid]) {
+            hi = mid;
+        } else if (target > nums[mid]) {
+            lo = mid + 1;
+        } else {
+            return mid;
+        }
+    }
+    return -1;
+}
+
+/**
+ * 若target < nums[mid] 则hi = mi,前半区间查找
+ * 若target > nums[mid] 则lo = mid + 1，后半区间查找
+ * 等于的情况，也把lo的情况也加一
  *
- * @param {number[]} nums
- * @param {number} target
- * @param {number} lo
- * @param {number} hi
+ * 如下的不变性
+ * nums[0, lo)的值全都不大于target, nums[hi, n)大于target
+ *
+ * 若命中，返回秩最大者，如果失败，返回查找失败的最后位置，所以需要上次去判断是不是命中元素
+ * @param {Array} nums
  */
-function binarySearchA(nums, target, lo, hi) {
+function binarySearchB(nums = [], target) {
+    let lo = 0;
+    let hi = nums.length;
     while (lo < hi) {
-        const mid = (lo + hi) >> 1;
-        const ele = nums[mid];
-        if (ele === target) {
-            return mid;
-        } else if (ele > target) {
+        const mid = (lo + hi) >>> 1;
+        if (target < nums[mid]) {
             hi = mid;
+        } else if (target > nums[mid]) {
+            lo = mid + 1;
         } else {
+            // 等于情况
             lo = mid + 1;
         }
     }
-    return -1;
+    return lo - 1;
 }
 
 /**
- * 斐波那契近乎黄金分割比例，能从常系数上减少复杂度
- * @param {number[]} nums
- * @param {number} target
- * @param {number} lo
- * @param {number} hi
+ * 若命中，返回秩最小者，如果失败，返回查找失败的最后位置，所以需要上次去判断是不是命中元素
+ * @param {Array} nums
  */
-function binarySearchB(nums, target, lo, hi) {
+function binarySearchC(nums = [], target) {
+    let lo = 0;
+    let hi = nums.length;
     while (lo < hi) {
-        const mid = Math.floor((lo + hi * 2) / 3);
-        const ele = nums[mid];
-        if (ele === target) {
-            return mid;
-        } else if (ele > target) {
+        const mid = (lo + hi) >>> 1;
+        if (target < nums[mid]) {
             hi = mid;
-        } else {
-            lo = mid + 1;
-        }
-    }
-    return -1;
-}
-
-/**
- * 针对最坏查找情况，能略微提高运算效率
- * 这里用1来避免死循环
- * @param {number[]} nums
- * @param {number} target
- * @param {number} lo
- * @param {number} hi
- */
-function binarySearchC(nums, target, lo, hi) {
-    while (hi - lo > 1) {
-        const mid = (lo + hi) >> 1;
-        if (nums[mid] < target) {
-            lo = mid;
-        } else {
-            hi = mid;
-        }
-    }
-    return nums[hi] === target ? hi : -1;
-}
-
-/**
- * 该版本的二分查找能找到nums中值为target且秩最大者
- * @param {number[]} nums
- * @param {number} target
- * @param {number} lo
- * @param {number} hi
- */
-function binarySearchD(nums, target, lo, hi) {
-    while (lo < hi) {
-        const mid = (lo + hi) >> 1;
-        // 相等rank也增加
-        if (nums[mid] <= target) {
+        } else if (target > nums[mid]) {
             lo = mid + 1;
         } else {
             hi = mid;
         }
     }
-    const index = lo - 1;
-    return index;
+    return hi;
 }
 
 /**
@@ -121,11 +107,14 @@ var searchMatrix = function (matrix, target) {
     }
     return false;
 };
-let matrix = [
-    [1, 4, 7, 11, 15],
-    [2, 5, 8, 12, 19],
-    [3, 6, 9, 16, 22],
-    [10, 13, 14, 17, 24],
-    [18, 21, 23, 26, 30]
-];
-let target = 5;
+// let matrix = [
+//     [1, 4, 7, 11, 15],
+//     [2, 5, 8, 12, 19],
+//     [3, 6, 9, 16, 22],
+//     [10, 13, 14, 17, 24],
+//     [18, 21, 23, 26, 30]
+// ];
+// let target = 5;
+
+let nums = [0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 8, 9, 10];
+console.log(binarySearchC(nums, -11));
